@@ -1,6 +1,6 @@
 library(tidyverse)
 library(container)
-library(comprehenr)
+# library(comprehenr)
 
 train_test_split = function(df, y_cols, id_cols, feats_lst,
                             test_size = .3, alpha = .5, target_alpha = .9) {
@@ -53,16 +53,17 @@ train_test_split = function(df, y_cols, id_cols, feats_lst,
     # Randomize test order to "cost-average" compute.
     # But, test y separately to avoid the join compute and data copies.
     feats_lst = sample(feats_lst)
-    y_feats_lst = to_list(
-      for (feat in feats_lst)
-        if (feat %in% colnames(split_lst$train_y))
-          feat
-    )
+    # y_feats_lst = to_list(
+    #   for (feat in feats_lst)
+    #     if (feat %in% colnames(split_lst$train_y))
+    #       feat
+    # )
     
     y_validation_results = validate_split(
       train = split_lst$train_y,
       test = split_lst$test_y,
-      feats_lst = y_feats_lst,
+      # feats_lst = y_feats_lst,
+      feats_lst = feats_lst,
       y_cols = y_cols,
       feats_p_val_lst = feats_p_av_lst,
       alpha = alpha,
