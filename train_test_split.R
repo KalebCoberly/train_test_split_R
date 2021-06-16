@@ -1,6 +1,6 @@
 library(tidyverse)
 library(container)
-# library(comprehenr)
+library(comprehenr)
 
 train_test_split = function(df, y_cols, id_cols, feats_lst, test_size = .3,
                             alpha = .5, target_alpha = .9, validate = TRUE) {
