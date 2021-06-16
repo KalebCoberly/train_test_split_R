@@ -1,6 +1,4 @@
 library(tidyverse)
-library(container)
-library(comprehenr)
 
 train_test_split = function(df, y_cols, id_cols, feats_lst, test_size = .3,
                             alpha = .5, target_alpha = .9, validate = TRUE) {
@@ -43,17 +41,6 @@ train_test_split = function(df, y_cols, id_cols, feats_lst, test_size = .3,
   feats_p_av_lst = vector(mode = 'list', length = length(feats_lst))
   names(feats_p_av_lst) = feats_lst
   
-  # Test X and y separately to avoid the join compute and data copies.
-  X_feats_lst = to_list(
-    for (feat in feats_lst)
-      if (feat %in% colnames(split_lst$train_X))
-        feat
-  )
-  y_feats_lst = to_list(
-    for (feat in feats_lst)
-      if (feat %in% colnames(split_lst$train_y))
-        feat
-  )
   
   # Split and validate until valid.
   valid_split = FALSE
@@ -66,18 +53,17 @@ train_test_split = function(df, y_cols, id_cols, feats_lst, test_size = .3,
     split_lst$test_X = select(df[test_idx, ], -all_of(y_cols))
     split_lst$test_y = select(df[test_idx, ], all_of(y_cols))
     split_lst$test_y[id_cols] = split_lst$test_X[id_cols]
-    rm(df)
     
     # Validate the split.
     if (validate) {
       # Randomize test order to "cost-average" compute.
-      X_feats_lst = sample(X_feats_lst)
-      y_feats_lst = sample(y_feats_lst)
+      feats_lst = sample(feats_lst)
       
+      # Test X and y separately to avoid the join compute and data copies.
       X_validation_results = validate_split(
         train = split_lst$train_X,
         test = split_lst$test_X,
-        feats_lst = X_feats_lst,
+        feats_lst = feats_lst,
         y_cols = y_cols,
         feats_p_val_lst = feats_p_av_lst,
         alpha = alpha,
@@ -90,7 +76,7 @@ train_test_split = function(df, y_cols, id_cols, feats_lst, test_size = .3,
         y_validation_results = validate_split(
           train = split_lst$train_y,
           test = split_lst$test_y,
-          feats_lst = y_feats_lst,
+          feats_lst = feats_lst,
           y_cols = y_cols,
           feats_p_val_lst = feats_p_av_lst,
           alpha = alpha,
@@ -100,8 +86,8 @@ train_test_split = function(df, y_cols, id_cols, feats_lst, test_size = .3,
         
         if (y_validation_results$valid) {
           valid_split = TRUE
-        } # else { print("Invalid split. Resampling.") }
-      } # else { print("Invalid split. Resampling.") }
+        } # else { print("Invalid y split. Resampling.") }
+      } # else { print("Invalid X split. Resampling.") }
     } else {valid = TRUE}
   }
   
@@ -109,8 +95,8 @@ train_test_split = function(df, y_cols, id_cols, feats_lst, test_size = .3,
     for(feat in names(feats_p_av_lst)) {
       feats_p_av_lst[[feat]] = mean(feats_p_av_lst[[feat]])
     }
-    # print('Average p-values:')
-    # print(feats_p_av_lst)
+    print('Average p-values:')
+    print(feats_p_av_lst)
   }
   
   return(split_lst)
