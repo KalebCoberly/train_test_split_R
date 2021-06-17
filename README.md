@@ -12,9 +12,9 @@ Toward this end, I wrote a simple algorithm using the Wilcoxon test on each nume
 In this case, because alpha represents the risk of incorrectly rejecting the null hypothesis (H0 = The samples did not come from significantly different populations, i.e. each side of the split is probably representative of the superset.), and because we want to fail to reject the null hypothesis, we want a p-value greater than alpha rather than less than alpha, and we want the greatest alpha that we can muster.
 
 ### Drawbacks and suggested improvements
-Again, this leaves out factors and integers entirely, unless you cast them as doubles, but that would violate the Wilcoxon assumption that the data is continuous.
+Again, this leaves out factors and integers entirely, unless you cast them as doubles, but that would violate the Wilcoxon assumption that the data is continuous. Given a data set in which a sufficient proportion of the features are doubles, perhaps this split method will at least improve the representativity of the factors and integers as well. Or, perhaps it will bias the split and overly weight numeric features during training.
 
-Given that [my current dataset](https://www.kaggle.com/c/house-prices-advanced-regression-techniques/data) contains about 80 variables, a good portion of which are doubles, this suffices for now because I assume the factors are probably pretty representative if all the doubles are. But, it can take a long time (possibly forever) to run and get even p > .5 on all variables. And, what about a data set with all or most of its variables as factors or integers?
+Also, it can take a long, unpredictable time (possibly forever) to run and get even p > .5 on all variables.
 
 Is there a better way, both/either from a mathematical/statistical perspective and/or an R/programming perspective? Also, is this somehow problematic for machine learning? I'd like to think that it would improve the generalizability of the trained/tuned model, reduce the chance of overfit, but does it somehow create leakage or something else problematic?
 
