@@ -88,7 +88,7 @@ train_test_split = function(df, y_cols, id_cols, feats_lst, test_size = .3,
           valid_split = TRUE
         } # else { print("Invalid y split. Resampling.") }
       } # else { print("Invalid X split. Resampling.") }
-    } else {valid = TRUE}
+    } else {valid_split = TRUE}
   }
   
   if (validate) {
