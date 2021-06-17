@@ -11,7 +11,7 @@ Toward this end, I wrote a simple algorithm using the Wilcoxon test on each nume
 
 In this case, because alpha represents the risk of incorrectly rejecting the null hypothesis (H0 = The samples did not come from significantly different populations, i.e. each side of the split is probably representative of the superset.), and because we want to fail to reject the null hypothesis, we want a p-value greater than alpha rather than less than alpha, and we want the greatest alpha that we can muster.
 
-### Drawbacks
+### Drawbacks and suggested improvements
 Again, this leaves out factors and integers entirely, unless you cast them as doubles, but that would violate the Wilcoxon assumption that the data is continuous.
 
 Given that [my current dataset](https://www.kaggle.com/c/house-prices-advanced-regression-techniques/data) contains about 80 variables, a good portion of which are doubles, this suffices for now because I assume the factors are probably pretty representative if all the doubles are. But, it can take a long time (possibly forever) to run and get even p > .5 on all variables. And, what about a data set with all or most of its variables as factors or integers?
@@ -24,6 +24,19 @@ In the current implementation, I record the p-values of each variable on each ru
 As a commenter on [Stack Overflow](https://stackoverflow.com/questions/67995221/how-to-sample-r-dataframe-so-that-its-representative-across-multiple-variables) pointed out, this grows vectors to possibly an unmanageable size.
 
 You could write in a parameter and logic to switch this task on an off. It's a simple fix, but not implemented here.
+
+#### Limiting search
+Because the search could theoretically run infinitely, it would be a good idea to write in a hard cap to the number of resamples tried or time spent searching. If you time out, you want to make sure you get the best sample rather than simply the last sample tried. You can store the index of the sample with the greatest minimum alpha, or median/mean or other preferred metric.
+
+#### Dropping features
+To save compute, you can drop features that will tend to the lowest alpha. To save compute and optimize features you care most about, you can omit features that you don't think will be very informative to your model anyway.
+
+You'll want to be careful to avoid leakage in how you choose these features. For instance, don't run a regression on the full set to see which features have the least predictive importance. I considered using a feature's average p-value over n trials to determine mid-search whether to drop the feature from consideration in the following trials of the search, but I'm concerned that would create leakage as well.
+
+#### Genetic algorithm
+Rather than sampling and validating serially, "generations" of samples could be validated together, with relatively optimal members used to populate the next generation. Each sample could have a unique genetic identity, perhaps simply the index. The best samples could each "donate" a random subsample to be recombined with the donations of other fit samples and random samples from the superset. This new generation could then be validated, and new set of the most fit samples can be generated (with previous generations included in the competition).
+
+This may reduce the number of samples/validations needed to converge on a solution, but it will come with some overhead as well.
 
 ## References
 @Manual{,
