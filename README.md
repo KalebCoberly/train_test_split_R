@@ -61,3 +61,5 @@ This may reduce the number of samples/validations needed to converge on a soluti
   doi = {10.21105/joss.01686},
 }
 
+Mann, Henry B.; Whitney, Donald R. (1947). "On a Test of Whether one of Two Random Variables is Stochastically Larger than the Other". Annals of Mathematical Statistics. 18 (1): 50–60. [doi:10.1214/aoms/1177730491](doi:10.1214/aoms/1177730491). MR 0022058. Zbl 0041.26103.
+
